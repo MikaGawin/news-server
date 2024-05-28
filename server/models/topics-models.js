@@ -2,7 +2,7 @@ const db = require('../../db/connection')
 
 exports.selectTopics = () => {
     const sqlQuery = `
-    Select slug, description
+    SELECT slug, description
     FROM topics;`;
 
     return db.query(sqlQuery)
