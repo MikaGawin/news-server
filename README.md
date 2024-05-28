@@ -1,8 +1,8 @@
 # Northcoders News API
 
-For instructions, please head over to [L2C NC News](https://l2c.northcoders.com/courses/be/nc-news).
+Please create a .env.development file in the form of the env-example with your database name.
 
-
+You can also create a .env.test file to create a test database with a smaller quantity of data.
 
 --- 
 
