@@ -5,7 +5,8 @@ Please create a .env.development file in the form of the env-example with your d
 please then use npm run seed to initialise database.
 
 
-For development please also create .env.test which will be used when running Jest tests.
+For development please also create .env.test, this will be used when running Jest tests.
+
 --- 
 
 This portfolio project was created as part of a Digital Skills Bootcamp in Software Engineering provided by [Northcoders](https://northcoders.com/)
