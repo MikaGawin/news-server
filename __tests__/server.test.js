@@ -12,12 +12,19 @@ afterAll(() => {
     return db.end()
 });
 
+describe('general errors', () => {
+    test('404: should return a 404 if the endpoint does not exist', () => {
+        return request(app)
+        .get('/api/deletedEndpoint')
+        .expect(404)
+    })
+})
 
 describe('/api/topics', () => {
     describe('GET requests', () => {
         test('200: should return an array of topics to the client', () => {
             return request(app)
-            .get('/api/topicsss')
+            .get('/api/topics')
             .expect(200)
             .then(({body}) => {
                 const {topics} = body;
