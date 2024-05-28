@@ -1,8 +1,11 @@
 # Northcoders News API
 
-For instructions, please head over to [L2C NC News](https://l2c.northcoders.com/courses/be/nc-news).
+Please create a .env.development file in the form of the env-example with your database name.
+
+please then use npm run seed to initialise database.
 
 
+For development please also create .env.test, this will be used when running Jest tests.
 
 --- 
 
