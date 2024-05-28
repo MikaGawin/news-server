@@ -2,8 +2,10 @@
 
 Please create a .env.development file in the form of the env-example with your database name.
 
-You can also create a .env.test file to create a test database with a smaller quantity of data.
+please then use npm run seed to initialise database.
 
+
+For development please also create .env.test which will be used when running Jest tests.
 --- 
 
 This portfolio project was created as part of a Digital Skills Bootcamp in Software Engineering provided by [Northcoders](https://northcoders.com/)
