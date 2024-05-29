@@ -16,13 +16,12 @@ afterAll(() => {
 describe("general errors", () => {
   test("GET 404: should return a 404 and relevant message if the endpoint does not exist", () => {
     return request(app)
-    .get("/api/deletedEndpoint")
-    .expect(404)
-    .then(({body}) => {
-      const {msg} = body;
-      expect(msg).toBe('Endpoint does not exist')
-    })
-    ;
+      .get("/api/deletedEndpoint")
+      .expect(404)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Endpoint does not exist");
+      });
   });
 });
 
@@ -52,6 +51,35 @@ describe("/api/topics", () => {
               slug: expect.any(String),
               description: expect.any(String),
             });
+          });
+        });
+    });
+  });
+});
+
+describe("/api/articles", () => {
+  describe("GET requests", () => {
+    test("200: should return an array of articles to the client", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body }) => {
+          const { articles } = body;
+          expect(articles.length).toBe(13);
+          articles.forEach((article) => {
+            expect(article).toMatchObject({
+              author: expect.any(String),
+              title: expect.any(String),
+              article_id: expect.any(Number),
+              topic: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              article_img_url: expect.any(String),
+              comment_count: expect.any(Number),
+            });
+          });
+          expect(articles).toBeSortedBy("created_at", {
+            descending: true,
           });
         });
     });

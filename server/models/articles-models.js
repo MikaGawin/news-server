@@ -1,5 +1,20 @@
 const db = require("../../db/connection");
 
+exports.selectArticles = () => {
+  const sqlQuery = `
+    SELECT  a.article_id, title, a.author, topic, a.created_at, a.votes, article_img_url, COUNT(comment_id) :: INT AS comment_count
+    FROM articles AS a
+    LEFT JOIN comments 
+    ON a.article_id = comments.article_id
+    GROUP BY a.article_id
+    ORDER BY created_at DESC;
+    `;
+
+  return db.query(sqlQuery).then(({ rows }) => {
+    return rows;
+  });
+};
+
 exports.selectArticleById = (articleId) => {
   const sqlQuery = `
     SELECT *
