@@ -27,8 +27,8 @@ app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 app.post("/api/articles/:article_id/comments", postCommentToArticleById);
 
 app.all("*", invalidEndpoint);
-app.use(invalidQuery);
 app.use(handleCustomError);
+app.use(invalidQuery);
 app.use(internalServerError);
 
 module.exports = app;
