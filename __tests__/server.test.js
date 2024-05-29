@@ -181,4 +181,26 @@ describe("/api/articles/:article_id/comments", () => {
         });
     });
   });
+  describe("POST request", () => {
+    test("201: inserts a new comment on the article into the database and should return a copy of the comment added", () => {
+      return request(app)
+        .post("/api/articles/1/comments")
+        .send({
+          username: "icellusedkars",
+          body: "This is my comment",
+        })
+        .expect(201)
+        .then(({ body }) => {
+          const { comment } = body;
+          expect(comment).toMatchObject({
+            article_id: 1,
+            comment_id: expect.any(Number),
+            author: "icellusedkars",
+            body: "This is my comment",
+            created_at: expect.any(String),
+            votes: 0,
+          });
+        });
+    });
+  });
 });
