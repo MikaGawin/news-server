@@ -128,3 +128,57 @@ describe("/api/articles/:article_id", () => {
     });
   });
 });
+
+describe("/api/articles/:article_id/comments", () => {
+  describe("GET request", () => {
+    test("200: should return the an array of comments for the requested article", () => {
+      return request(app)
+        .get("/api/articles/1/comments")
+        .expect(200)
+        .then(({ body }) => {
+          const { comments } = body;
+          expect(comments).toBeArrayOfSize(11);
+          comments.forEach((comment) => {
+            expect(comment).toMatchObject({
+              comment_id: expect.any(Number),
+              votes: expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+              article_id: 1,
+            });
+          });
+          expect(comments).toBeSortedBy("created_at", {
+            descending: true,
+          });
+        });
+    });
+    test("200: should return the an empty array if the article exists but has not comments", () => {
+      return request(app)
+        .get("/api/articles/2/comments")
+        .expect(200)
+        .then(({ body }) => {
+          const { comments } = body;
+          expect(comments).toBeArrayOfSize(0);
+        });
+    });
+    test("404: should return 404, not found if given a valid but non existant id", () => {
+      return request(app)
+        .get("/api/articles/666/comments")
+        .expect(404)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe("Id not found");
+        });
+    });
+    test("400, should return 400, invalid request when given an invalid id", () => {
+      return request(app)
+        .get("/api/articles/badRequest/comments")
+        .expect(400)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe("Invalid request");
+        });
+    });
+  });
+});
