@@ -202,5 +202,41 @@ describe("/api/articles/:article_id/comments", () => {
           });
         });
     });
+    test("404: returns an error if the username is not recognised", () => {
+      return request(app)
+        .post("/api/articles/1/comments")
+        .send({
+          username: "badUser",
+          body: "This is my comment",
+        })
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid selection");
+        });
+    });
+    test("404: returns an error if the article id does not exist", () => {
+      return request(app)
+        .post("/api/articles/666/comments")
+        .send({
+          username: "icellusedkars",
+          body: "This is my comment",
+        })
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid selection");
+        });
+    });
+    test("400: returns an error if the username or comment body has not been supplied", () => {
+      return request(app)
+        .post("/api/articles/1/comments")
+        .send({
+          username: undefined,
+          body: undefined,
+        })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Incomplete body");
+        });
+    });
   });
 });
