@@ -1,9 +1,9 @@
-const {selectApi} = require('../models/api-models')
+const { selectApi } = require("../models/api-models");
 
 exports.getApi = (req, res, next) => {
-    selectApi()
+  selectApi()
     .then((endpoints) => {
-        res.status(200).send({endpoints})
+      res.status(200).send({ endpoints });
     })
-    .catch(next)
+    .catch(next);
 };

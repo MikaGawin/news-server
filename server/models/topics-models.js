@@ -1,12 +1,11 @@
-const db = require('../../db/connection');
+const db = require("../../db/connection");
 
 exports.selectTopics = () => {
-    const sqlQuery = `
+  const sqlQuery = `
     SELECT slug, description
     FROM topics;`;
 
-    return db.query(sqlQuery)
-    .then(({rows}) => {
-        return rows
-    })
+  return db.query(sqlQuery).then(({ rows }) => {
+    return rows;
+  });
 };
