@@ -5,6 +5,7 @@ const {
   getArticles,
   getArticleById,
   getCommentsByArticleId,
+  postCommentToArticleById,
 } = require("./controllers/articles-controllers");
 const {
   invalidEndpoint,
@@ -15,15 +16,19 @@ const {
 
 const app = express();
 
+app.use(express.json());
+
 app.get("/api", getApi);
 app.get("/api/topics", getTopics);
 app.get("/api/articles", getArticles);
 app.get("/api/articles/:article_id", getArticleById);
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 
+app.post("/api/articles/:article_id/comments", postCommentToArticleById);
+
 app.all("*", invalidEndpoint);
-app.use(invalidQuery);
 app.use(handleCustomError);
+app.use(invalidQuery);
 app.use(internalServerError);
 
 module.exports = app;

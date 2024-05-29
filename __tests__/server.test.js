@@ -181,4 +181,62 @@ describe("/api/articles/:article_id/comments", () => {
         });
     });
   });
+  describe("POST request", () => {
+    test("201: inserts a new comment on the article into the database and should return a copy of the comment added", () => {
+      return request(app)
+        .post("/api/articles/1/comments")
+        .send({
+          username: "icellusedkars",
+          body: "This is my comment",
+        })
+        .expect(201)
+        .then(({ body }) => {
+          const { comment } = body;
+          expect(comment).toMatchObject({
+            article_id: 1,
+            comment_id: expect.any(Number),
+            author: "icellusedkars",
+            body: "This is my comment",
+            created_at: expect.any(String),
+            votes: 0,
+          });
+        });
+    });
+    test("404: returns an error if the username is not recognised", () => {
+      return request(app)
+        .post("/api/articles/1/comments")
+        .send({
+          username: "badUser",
+          body: "This is my comment",
+        })
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid selection");
+        });
+    });
+    test("404: returns an error if the article id does not exist", () => {
+      return request(app)
+        .post("/api/articles/666/comments")
+        .send({
+          username: "icellusedkars",
+          body: "This is my comment",
+        })
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid selection");
+        });
+    });
+    test("400: returns an error if the username or comment body has not been supplied", () => {
+      return request(app)
+        .post("/api/articles/1/comments")
+        .send({
+          username: undefined,
+          body: undefined,
+        })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Incomplete body");
+        });
+    });
+  });
 });

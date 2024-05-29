@@ -45,3 +45,21 @@ exports.selectCommentsByArticleId = (articleId) => {
     return rows;
   });
 };
+
+exports.insertCommentToArticleById = (articleId, { username, body }) => {
+  if (!username || !body) {
+    return Promise.reject({ status: 400, msg: "Incomplete body" });
+  }
+  const sqlQuery = `
+  INSERT INTO comments
+  (article_id, author, body) 
+  VALUES 
+  ($1, $2, $3)
+  RETURNING *;`;
+
+  const commentData = [articleId, username, body];
+
+  return db.query(sqlQuery, commentData).then(({ rows }) => {
+    return rows[0];
+  });
+};
