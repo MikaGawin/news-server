@@ -32,3 +32,16 @@ exports.selectArticleById = (articleId) => {
     return rows[0];
   });
 };
+
+exports.selectCommentsByArticleId = (articleId) => {
+  const sqlQuery = `
+    SELECT *
+    FROM comments
+    WHERE
+    article_id = $1
+    ORDER BY created_at DESC;`;
+
+  return db.query(sqlQuery, [articleId]).then(({ rows }) => {
+    return rows;
+  });
+};
