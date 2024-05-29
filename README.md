@@ -1,6 +1,6 @@
 # Northcoders News API
 
-Please create a .env.development file in the form of the env-example with your database name.
+Please create a .env.development file in the form of the env-example with your database name, please look at setup.sql for database names.
 
 please then use npm run seed to initialise database.
 
