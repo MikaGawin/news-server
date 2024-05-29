@@ -14,8 +14,15 @@ afterAll(() => {
 });
 
 describe("general errors", () => {
-  test("GET 404: should return a 404 if the endpoint does not exist", () => {
-    return request(app).get("/api/deletedEndpoint").expect(404);
+  test("GET 404: should return a 404 and relevant message if the endpoint does not exist", () => {
+    return request(app)
+    .get("/api/deletedEndpoint")
+    .expect(404)
+    .then(({body}) => {
+      const {msg} = body;
+      expect(msg).toBe('Endpoint does not exist')
+    })
+    ;
   });
 });
 
