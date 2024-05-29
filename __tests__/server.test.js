@@ -162,6 +162,15 @@ describe("/api/articles/:article_id/comments", () => {
           expect(comments).toBeArrayOfSize(0);
         });
     });
+    test("404: should return 404, not found if given a valid but non existant id", () => {
+      return request(app)
+        .get("/api/articles/666/comments")
+        .expect(404)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe("Id not found");
+        });
+    });
     test("400, should return 400, invalid request when given an invalid id", () => {
       return request(app)
         .get("/api/articles/badRequest/comments")
