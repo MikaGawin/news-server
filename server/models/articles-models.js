@@ -1,16 +1,25 @@
 const db = require("../../db/connection");
 
-exports.selectArticles = () => {
-  const sqlQuery = `
+exports.selectArticles = ({ topic }) => {
+  const queries = [];
+  let sqlQuery = `
     SELECT  a.article_id, title, a.author, topic, a.created_at, a.votes, article_img_url, COUNT(comment_id) :: INT AS comment_count
     FROM articles AS a
     LEFT JOIN comments 
     ON a.article_id = comments.article_id
+  `;
+
+  if (topic) {
+    sqlQuery += `WHERE topic = $1`;
+    queries.push(topic);
+  }
+
+  sqlQuery += `
     GROUP BY a.article_id
     ORDER BY created_at DESC;
-    `;
+  `;
 
-  return db.query(sqlQuery).then(({ rows }) => {
+  return db.query(sqlQuery, queries).then(({ rows }) => {
     return rows;
   });
 };
@@ -78,7 +87,7 @@ exports.updateArticleById = (articleId, { inc_votes: incrementVotes = 0 }) => {
         msg: "Id not found",
       });
     } else {
-      return rows[0]
+      return rows[0];
     }
   });
 };

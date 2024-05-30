@@ -83,7 +83,53 @@ describe("/api/articles", () => {
           });
         });
     });
+
   });
+  describe("GET requests with queries", () => {
+    describe("query by topic", () => {
+      test("200: should return an array of articles with the requested topic to the client", () => {
+        return request(app)
+          .get("/api/articles?topic=mitch")
+          .expect(200)
+          .then(({ body }) => {
+            const { articles } = body;
+            expect(articles.length).toBe(12);
+            articles.forEach((article) => {
+              expect(article).toMatchObject({
+                author: expect.any(String),
+                title: expect.any(String),
+                article_id: expect.any(Number),
+                topic: "mitch",
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+                article_img_url: expect.any(String),
+                comment_count: expect.any(Number),
+              });
+            });
+            expect(articles).toBeSortedBy("created_at", {
+              descending: true,
+            });
+          });
+      });
+      test("200: should return an empty array if the topic exists but there are no articles", () => {
+        return request(app)
+          .get("/api/articles?topic=paper")
+          .expect(200)
+          .then(({ body }) => {
+            const { articles } = body;
+            expect(articles.length).toBe(0);
+          });
+      });
+      test("404: should return error if the topic does not exist", () => {
+        return request(app)
+        .get("/api/articles?topic=badquery")
+        .expect(404)
+        .then(({ body }) => {
+            expect(body.msg).toBe("Topic not found");
+        });
+      })
+    })
+  })
 });
 
 describe("/api/articles/:article_id", () => {
