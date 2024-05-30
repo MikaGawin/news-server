@@ -14,8 +14,10 @@ exports.getArticles = (req, res, next) => {
 
   articlesAndQueries.push(selectArticles(queries));
 
-  if(queries.topic) {
-    articlesAndQueries.push(checkExists("topics", "slug", queries.topic, "topic"))
+  if (queries.topic) {
+    articlesAndQueries.push(
+      checkExists("topics", "slug", queries.topic, "topic")
+    );
   }
 
   Promise.all(articlesAndQueries)

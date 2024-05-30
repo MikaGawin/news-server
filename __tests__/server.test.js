@@ -83,7 +83,6 @@ describe("/api/articles", () => {
           });
         });
     });
-
   });
   describe("GET requests with queries", () => {
     describe("query by topic", () => {
@@ -122,14 +121,14 @@ describe("/api/articles", () => {
       });
       test("404: should return error if the topic does not exist", () => {
         return request(app)
-        .get("/api/articles?topic=badquery")
-        .expect(404)
-        .then(({ body }) => {
+          .get("/api/articles?topic=badquery")
+          .expect(404)
+          .then(({ body }) => {
             expect(body.msg).toBe("Topic not found");
-        });
-      })
-    })
-  })
+          });
+      });
+    });
+  });
 });
 
 describe("/api/articles/:article_id", () => {
