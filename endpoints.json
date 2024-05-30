@@ -42,6 +42,9 @@
   },
   "PATCH /api/articles/:article_id": {
     "description": "updates data on an article",
+    "example body": {
+      "inc_votes": 15
+    },
     "exampleResponse": {
       "article_id": 1,
       "title": "Living in the shadow of a great man",
@@ -77,6 +80,10 @@
   },
   "POST /api/articles/:article_id/comments": {
     "description": "adds a new comment with supplied article id to the database",
+    "example body": {
+      "username": "icellusedkars",
+      "body": "This is my comment"
+    },
     "exampleResponse": {
       "comment_id": "12",
       "votes": "0",
