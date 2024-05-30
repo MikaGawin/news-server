@@ -350,5 +350,23 @@ describe("/api/comments/:comment_id", () => {
     test("204 deletes selected comment and returns no content", () => {
       return request(app).delete("/api/comments/1").expect(204);
     });
+    test("400, should return 400, invalid request when given an invalid id", () => {
+      return request(app)
+        .delete("/api/comments/badRequest")
+        .expect(400)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe("Invalid request");
+        });
+    });
+    test("404: should return 404, not found if given a valid but non existant id", () => {
+      return request(app)
+        .delete("/api/comments/666")
+        .expect(404)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe("Id not found");
+        });
+    });
   });
 });
