@@ -26,10 +26,13 @@ exports.selectArticles = ({ topic }) => {
 
 exports.selectArticleById = (articleId) => {
   const sqlQuery = `
-    SELECT *
-    FROM articles
-    WHERE
-    article_id = $1;`;
+    SELECT 
+    a.article_id, a.title, a.topic, a.author, a.body, a.created_at, a.votes, COUNT(comment_id) :: INT AS comment_count, a.article_img_url
+    FROM articles AS a
+    LEFT JOIN comments AS c ON a.article_id = c.article_id
+    WHERE a.article_id = $1
+    GROUP BY a.article_id;
+    `;
 
   return db.query(sqlQuery, [articleId]).then(({ rows }) => {
     if (!rows[0]) {
