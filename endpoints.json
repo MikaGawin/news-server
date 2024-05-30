@@ -93,7 +93,7 @@
       "article_id": "1"
     }
   },
-  "POST /api/articles/:article_id/comments": {
+  "DELETE /api/comments/comment_id": {
     "description": "removes the relevant comment from the database"
   }
 }
