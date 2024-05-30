@@ -111,6 +111,23 @@ describe.only("/api/articles", () => {
             });
           });
       });
+      test("200: should return an empty array if the topic exists but there are no articles", () => {
+        return request(app)
+          .get("/api/articles?topic=paper")
+          .expect(200)
+          .then(({ body }) => {
+            const { articles } = body;
+            expect(articles.length).toBe(0);
+          });
+      });
+      xtest("400: should return 404 if the topic does not exist", () => {
+        return request(app)
+        .get("/api/articles?topic=badquery")
+        .expect(404)
+        .then(({ body }) => {
+            expect(body.msg).toBe("Topic not found");
+        });
+      })
     })
   })
 });
