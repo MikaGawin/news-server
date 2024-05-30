@@ -272,6 +272,27 @@ describe("/api/articles/:article_id/comments", () => {
           });
         });
     });
+    test("201: Should run as normal when given an additional unknown field in the body", () => {
+      return request(app)
+        .post("/api/articles/1/comments")
+        .send({
+          username: "icellusedkars",
+          body: "This is my comment",
+          unknownField: 123
+        })
+        .expect(201)
+        .then(({ body }) => {
+          const { comment } = body;
+          expect(comment).toMatchObject({
+            article_id: 1,
+            comment_id: expect.any(Number),
+            author: "icellusedkars",
+            body: "This is my comment",
+            created_at: expect.any(String),
+            votes: 0,
+          });
+        });
+    });
     test("404: returns an error if the username is not recognised", () => {
       return request(app)
         .post("/api/articles/1/comments")
@@ -282,6 +303,19 @@ describe("/api/articles/:article_id/comments", () => {
         .expect(404)
         .then(({ body }) => {
           expect(body.msg).toBe("Invalid selection");
+        });
+    });
+    test("400, should return 400, invalid request when given an invalid id", () => {
+      return request(app)
+        .post("/api/articles/badRequest/comments")
+        .send({
+          username: "icellusedkars",
+          body: "This is my comment",
+        })
+        .expect(400)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe("Invalid request");
         });
     });
     test("404: returns an error if the article id does not exist", () => {
