@@ -57,7 +57,7 @@ describe("/api/topics", () => {
   });
 });
 
-describe("/api/articles", () => {
+describe.only("/api/articles", () => {
   describe("GET requests", () => {
     test("200: should return an array of articles to the client", () => {
       return request(app)
@@ -83,7 +83,36 @@ describe("/api/articles", () => {
           });
         });
     });
+
   });
+  describe("GET requests with queries", () => {
+    describe("query by topic", () => {
+      test("200: should return an array of articles with the requested topic to the client", () => {
+        return request(app)
+          .get("/api/articles?topic=mitch")
+          .expect(200)
+          .then(({ body }) => {
+            const { articles } = body;
+            expect(articles.length).toBe(12);
+            articles.forEach((article) => {
+              expect(article).toMatchObject({
+                author: expect.any(String),
+                title: expect.any(String),
+                article_id: expect.any(Number),
+                topic: "mitch",
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+                article_img_url: expect.any(String),
+                comment_count: expect.any(Number),
+              });
+            });
+            expect(articles).toBeSortedBy("created_at", {
+              descending: true,
+            });
+          });
+      });
+    })
+  })
 });
 
 describe("/api/articles/:article_id", () => {
