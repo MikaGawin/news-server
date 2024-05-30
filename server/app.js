@@ -14,6 +14,7 @@ const {
   internalServerError,
   handleCustomError,
 } = require("./errorHandling/errorHandling");
+const { deleteCommentById } = require("./controllers/comments-controllers");
 
 const app = express();
 
@@ -28,6 +29,8 @@ app.patch("/api/articles/:article_id", patchArticleById);
 
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 app.post("/api/articles/:article_id/comments", postCommentToArticleById);
+
+app.delete("/api/comments/:comment_id", deleteCommentById);
 
 app.all("*", invalidEndpoint);
 app.use(handleCustomError);

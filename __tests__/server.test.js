@@ -154,7 +154,7 @@ describe("/api/articles/:article_id", () => {
       return request(app)
         .patch("/api/articles/1")
         .send({
-          invalid_field: 1233
+          invalid_field: 1233,
         })
         .expect(200)
         .then(({ body }) => {
@@ -176,7 +176,7 @@ describe("/api/articles/:article_id", () => {
       return request(app)
         .patch("/api/articles/badRequest")
         .send({
-          inc_votes: 10
+          inc_votes: 10,
         })
         .expect(400)
         .then(({ body }) => {
@@ -188,7 +188,7 @@ describe("/api/articles/:article_id", () => {
       return request(app)
         .patch("/api/articles/666")
         .send({
-          inc_votes: 10
+          inc_votes: 10,
         })
         .expect(404)
         .then(({ body }) => {
@@ -278,7 +278,7 @@ describe("/api/articles/:article_id/comments", () => {
         .send({
           username: "icellusedkars",
           body: "This is my comment",
-          unknownField: 123
+          unknownField: 123,
         })
         .expect(201)
         .then(({ body }) => {
@@ -340,6 +340,32 @@ describe("/api/articles/:article_id/comments", () => {
         .expect(400)
         .then(({ body }) => {
           expect(body.msg).toBe("Incomplete body");
+        });
+    });
+  });
+});
+
+describe("/api/comments/:comment_id", () => {
+  describe("DELETE request", () => {
+    test("204 deletes selected comment and returns no content", () => {
+      return request(app).delete("/api/comments/1").expect(204);
+    });
+    test("400, should return 400, invalid request when given an invalid id", () => {
+      return request(app)
+        .delete("/api/comments/badRequest")
+        .expect(400)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe("Invalid request");
+        });
+    });
+    test("404: should return 404, not found if given a valid but non existant id", () => {
+      return request(app)
+        .delete("/api/comments/666")
+        .expect(404)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe("Id not found");
         });
     });
   });

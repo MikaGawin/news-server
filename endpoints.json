@@ -92,5 +92,8 @@
       "body": "This article was good",
       "article_id": "1"
     }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "removes the relevant comment from the database"
   }
 }
