@@ -64,7 +64,7 @@ exports.insertCommentToArticleById = (articleId, { username, body }) => {
   });
 };
 
-exports.updateArticleById = (articleId, { inc_votes: incrementVotes }) => {
+exports.updateArticleById = (articleId, { inc_votes: incrementVotes = 0 }) => {
   const sqlQuery = `
   UPDATE articles
   SET votes = votes + $1
