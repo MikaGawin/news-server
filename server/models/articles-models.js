@@ -63,3 +63,15 @@ exports.insertCommentToArticleById = (articleId, { username, body }) => {
     return rows[0];
   });
 };
+
+exports.updateArticleById = (articleId, { inc_votes: incrementVotes }) => {
+  const sqlQuery = `
+  UPDATE articles
+  SET votes = votes + $1
+  WHERE article_id = $2
+  RETURNING *`;
+
+  return db.query(sqlQuery, [incrementVotes, articleId]).then(({ rows }) => {
+    return rows[0];
+  });
+};
