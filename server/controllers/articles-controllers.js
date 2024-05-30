@@ -6,6 +6,8 @@ const {
   updateArticleById,
 } = require("../models/articles-models");
 
+const { checkExists } = require("../models/utils-models");
+
 exports.getArticles = (req, res, next) => {
   const queries = req.query;
   selectArticles(queries)
