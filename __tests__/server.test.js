@@ -172,6 +172,18 @@ describe("/api/articles/:article_id", () => {
           });
         });
     });
+    test("400, should return 400, bad request if inc_votes is not a valid data type", () => {
+      return request(app)
+      .patch("/api/articles/badRequest")
+      .send({
+        inc_votes: "10",
+      })
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Invalid request");
+      });
+    })
     test("400, should return 400, invalid request when given an invalid id", () => {
       return request(app)
         .patch("/api/articles/badRequest")
