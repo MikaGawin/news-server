@@ -150,10 +150,12 @@ describe("/api/articles/:article_id", () => {
           });
         });
     });
-    test("200: should return the article as is if no fields are listed to patch", () => {
+    test("200: should ignore invalid fields and return the article as is if no valid fields are listed to patch", () => {
       return request(app)
         .patch("/api/articles/1")
-        .send({})
+        .send({
+          invalid_field: 1233
+        })
         .expect(200)
         .then(({ body }) => {
           const { article } = body;
