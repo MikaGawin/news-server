@@ -172,6 +172,18 @@ describe("/api/articles/:article_id", () => {
           });
         });
     });
+    test("400, should return 400, bad request if inc_votes is not a valid data type", () => {
+      return request(app)
+        .patch("/api/articles/badRequest")
+        .send({
+          inc_votes: "10",
+        })
+        .expect(400)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe("Invalid request");
+        });
+    });
     test("400, should return 400, invalid request when given an invalid id", () => {
       return request(app)
         .patch("/api/articles/badRequest")
@@ -366,6 +378,27 @@ describe("/api/comments/:comment_id", () => {
         .then(({ body }) => {
           const { msg } = body;
           expect(msg).toBe("Id not found");
+        });
+    });
+  });
+});
+
+describe("/api/users", () => {
+  describe("GET requests", () => {
+    test("200: should return an array of users to the client", () => {
+      return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then(({ body }) => {
+          const { users } = body;
+          expect(users.length).toBe(4);
+          users.forEach((user) => {
+            expect(user).toMatchObject({
+              username: expect.any(String),
+              name: expect.any(String),
+              avatar_url: expect.any(String),
+            });
+          });
         });
     });
   });

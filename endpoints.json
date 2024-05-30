@@ -9,6 +9,13 @@
       "topics": [{ "slug": "football", "description": "Footie!" }]
     }
   },
+  "GET /api/users": {
+    "description": "serves an array of all users",
+    "queries": [],
+    "exampleResponse": {
+      "topics": [{ "username": "footballman", "name": "James Giles", "avatar_url": "https://pictureurl.com"}]
+    }
+  },
   "GET /api/articles": {
     "description": "serves an array of all articles",
     "queries": ["author", "topic", "sort_by", "order"],
@@ -93,7 +100,7 @@
       "article_id": "1"
     }
   },
-  "POST /api/articles/:article_id/comments": {
+  "DELETE /api/comments/comment_id": {
     "description": "removes the relevant comment from the database"
   }
 }
