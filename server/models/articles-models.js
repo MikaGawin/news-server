@@ -63,3 +63,22 @@ exports.insertCommentToArticleById = (articleId, { username, body }) => {
     return rows[0];
   });
 };
+
+exports.updateArticleById = (articleId, { inc_votes: incrementVotes = 0 }) => {
+  const sqlQuery = `
+  UPDATE articles
+  SET votes = votes + $1
+  WHERE article_id = $2
+  RETURNING *`;
+
+  return db.query(sqlQuery, [incrementVotes, articleId]).then(({ rows }) => {
+    if (!rows[0]) {
+      return Promise.reject({
+        status: 404,
+        msg: "Id not found",
+      });
+    } else {
+      return rows[0]
+    }
+  });
+};

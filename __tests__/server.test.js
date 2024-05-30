@@ -127,6 +127,76 @@ describe("/api/articles/:article_id", () => {
         });
     });
   });
+  describe("PATCH request", () => {
+    test("200: should update the article in the database and return the updated article", () => {
+      return request(app)
+        .patch("/api/articles/1")
+        .send({
+          inc_votes: 15,
+        })
+        .expect(200)
+        .then(({ body }) => {
+          const { article } = body;
+          expect(article).toMatchObject({
+            article_id: 1,
+            title: "Living in the shadow of a great man",
+            topic: "mitch",
+            author: "butter_bridge",
+            body: "I find this existence challenging",
+            created_at: "2020-07-09T20:11:00.000Z",
+            votes: 115,
+            article_img_url:
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          });
+        });
+    });
+    test("200: should ignore invalid fields and return the article as is if no valid fields are listed to patch", () => {
+      return request(app)
+        .patch("/api/articles/1")
+        .send({
+          invalid_field: 1233
+        })
+        .expect(200)
+        .then(({ body }) => {
+          const { article } = body;
+          expect(article).toMatchObject({
+            article_id: 1,
+            title: "Living in the shadow of a great man",
+            topic: "mitch",
+            author: "butter_bridge",
+            body: "I find this existence challenging",
+            created_at: "2020-07-09T20:11:00.000Z",
+            votes: 100,
+            article_img_url:
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          });
+        });
+    });
+    test("400, should return 400, invalid request when given an invalid id", () => {
+      return request(app)
+        .patch("/api/articles/badRequest")
+        .send({
+          inc_votes: 10
+        })
+        .expect(400)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe("Invalid request");
+        });
+    });
+    test("404: should return 404, not found if given a valid but non existant id", () => {
+      return request(app)
+        .patch("/api/articles/666")
+        .send({
+          inc_votes: 10
+        })
+        .expect(404)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe("Id not found");
+        });
+    });
+  });
 });
 
 describe("/api/articles/:article_id/comments", () => {
