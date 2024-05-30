@@ -15,7 +15,7 @@ const {
   handleCustomError,
 } = require("./errorHandling/errorHandling");
 const { deleteCommentById } = require("./controllers/comments-controllers");
-const {getUsers} = require("./controllers/users-controllers");
+const { getUsers } = require("./controllers/users-controllers");
 
 const app = express();
 

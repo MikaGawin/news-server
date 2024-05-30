@@ -83,7 +83,6 @@ describe("/api/articles", () => {
           });
         });
     });
-
   });
   describe("GET requests with queries", () => {
     describe("query by topic", () => {
@@ -122,14 +121,14 @@ describe("/api/articles", () => {
       });
       test("404: should return error if the topic does not exist", () => {
         return request(app)
-        .get("/api/articles?topic=badquery")
-        .expect(404)
-        .then(({ body }) => {
+          .get("/api/articles?topic=badquery")
+          .expect(404)
+          .then(({ body }) => {
             expect(body.msg).toBe("Topic not found");
-        });
-      })
-    })
-  })
+          });
+      });
+    });
+  });
 });
 
 describe("/api/articles/:article_id", () => {
@@ -148,6 +147,7 @@ describe("/api/articles/:article_id", () => {
             body: "I find this existence challenging",
             created_at: "2020-07-09T20:11:00.000Z",
             votes: 100,
+            comment_count: 11,
             article_img_url:
               "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
           };
