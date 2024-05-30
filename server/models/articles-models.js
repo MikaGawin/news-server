@@ -72,6 +72,13 @@ exports.updateArticleById = (articleId, { inc_votes: incrementVotes = 0 }) => {
   RETURNING *`;
 
   return db.query(sqlQuery, [incrementVotes, articleId]).then(({ rows }) => {
-    return rows[0];
+    if (!rows[0]) {
+      return Promise.reject({
+        status: 404,
+        msg: "Id not found",
+      });
+    } else {
+      return rows[0]
+    }
   });
 };

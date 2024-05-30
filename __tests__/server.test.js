@@ -170,6 +170,30 @@ describe("/api/articles/:article_id", () => {
           });
         });
     });
+    test("400, should return 400, invalid request when given an invalid id", () => {
+      return request(app)
+        .patch("/api/articles/badRequest")
+        .send({
+          inc_votes: 10
+        })
+        .expect(400)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe("Invalid request");
+        });
+    });
+    test("404: should return 404, not found if given a valid but non existant id", () => {
+      return request(app)
+        .patch("/api/articles/666")
+        .send({
+          inc_votes: 10
+        })
+        .expect(404)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe("Id not found");
+        });
+    });
   });
 });
 
