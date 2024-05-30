@@ -57,7 +57,7 @@ describe("/api/topics", () => {
   });
 });
 
-describe.only("/api/articles", () => {
+describe("/api/articles", () => {
   describe("GET requests", () => {
     test("200: should return an array of articles to the client", () => {
       return request(app)
