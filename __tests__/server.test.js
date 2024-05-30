@@ -120,7 +120,7 @@ describe.only("/api/articles", () => {
             expect(articles.length).toBe(0);
           });
       });
-      xtest("404: should return error if the topic does not exist", () => {
+      test("404: should return error if the topic does not exist", () => {
         return request(app)
         .get("/api/articles?topic=badquery")
         .expect(404)

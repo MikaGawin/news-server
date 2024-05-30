@@ -1,13 +1,18 @@
 const db = require("../../db/connection");
+const format = require("pg-format");
 
-exports.checkExists = (tableName, category, value) => {
-  const sqlQuery = `SELECT * FROM $1 WHERE $2 = $3;`;
+exports.checkExists = (tableName, category, value, queryName) => {
+  const sqlQuery = format(
+    `SELECT * FROM %I WHERE %I = $1;`,
+    tableName,
+    category
+  );
 
-  return db.query(sqlQuery, [tableName, category, value]).then(({ rows }) => {
-    if (!rows) {
+  return db.query(sqlQuery, [value]).then(({ rows }) => {
+    if (!rows[0]) {
       return Promise.reject({
-        status: 400,
-        msg: `${category[0].toUpperCase}${category.slice(1)} not found`,
+        status: 404,
+        msg: `${queryName[0].toUpperCase()}${queryName.slice(1)} not found`,
       });
     }
   });
