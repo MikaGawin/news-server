@@ -154,7 +154,7 @@ describe("/api/articles/:article_id", () => {
       return request(app)
         .patch("/api/articles/1")
         .send({
-          invalid_field: 1233
+          invalid_field: 1233,
         })
         .expect(200)
         .then(({ body }) => {
@@ -176,7 +176,7 @@ describe("/api/articles/:article_id", () => {
       return request(app)
         .patch("/api/articles/badRequest")
         .send({
-          inc_votes: 10
+          inc_votes: 10,
         })
         .expect(400)
         .then(({ body }) => {
@@ -188,7 +188,7 @@ describe("/api/articles/:article_id", () => {
       return request(app)
         .patch("/api/articles/666")
         .send({
-          inc_votes: 10
+          inc_votes: 10,
         })
         .expect(404)
         .then(({ body }) => {
@@ -278,7 +278,7 @@ describe("/api/articles/:article_id/comments", () => {
         .send({
           username: "icellusedkars",
           body: "This is my comment",
-          unknownField: 123
+          unknownField: 123,
         })
         .expect(201)
         .then(({ body }) => {
@@ -341,6 +341,14 @@ describe("/api/articles/:article_id/comments", () => {
         .then(({ body }) => {
           expect(body.msg).toBe("Incomplete body");
         });
+    });
+  });
+});
+
+describe("/api/comments/:comment_id", () => {
+  describe("DELETE request", () => {
+    test("204 deletes selected comment and returns no content", () => {
+      return request(app).delete("/api/comments/1").expect(204);
     });
   });
 });
