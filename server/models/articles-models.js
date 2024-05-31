@@ -1,6 +1,36 @@
 const db = require("../../db/connection");
+const { sort } = require("../../db/data/test-data/articles");
 
-exports.selectArticles = ({ topic }) => {
+exports.selectArticles = ({
+  topic,
+  sort_by: sortBy = "created_at",
+  order = "desc",
+}) => {
+  const orderableColumns = [
+    "author",
+    "title",
+    "article_id",
+    "topic",
+    "created_at",
+    "votes",
+    "article_img_url",
+    "comment_count",
+  ];
+
+  if (order.toLowerCase() !== "desc" && order.toLowerCase() !== "asc") {
+    return Promise.reject({
+      status: 400,
+      msg: "Bad request",
+    });
+  }
+
+  if (!orderableColumns.includes(sortBy.toLowerCase())) {
+    return Promise.reject({
+      status: 400,
+      msg: "Bad request",
+    });
+  }
+
   const queries = [];
   let sqlQuery = `
     SELECT  a.article_id, title, a.author, topic, a.created_at, a.votes, article_img_url, COUNT(comment_id) :: INT AS comment_count
@@ -16,7 +46,7 @@ exports.selectArticles = ({ topic }) => {
 
   sqlQuery += `
     GROUP BY a.article_id
-    ORDER BY created_at DESC;
+    ORDER BY ${sortBy} ${order};
   `;
 
   return db.query(sqlQuery, queries).then(({ rows }) => {

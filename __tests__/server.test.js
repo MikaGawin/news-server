@@ -128,6 +128,117 @@ describe("/api/articles", () => {
           });
       });
     });
+    describe("order by", () => {
+      const orderableColumns = [
+        "author",
+        "title",
+        "article_id",
+        "topic",
+        "created_at",
+        "votes",
+        "article_img_url",
+        "comment_count",
+      ];
+      orderableColumns.forEach((column) => {
+        test(`200: should return an array sorted by ${column} in descending order`, () => {
+          return request(app)
+            .get(`/api/articles?sort_by=${column}`)
+            .expect(200)
+            .then(({ body }) => {
+              const { articles } = body;
+              expect(articles.length).toBe(13);
+              articles.forEach((article) => {
+                expect(article).toMatchObject({
+                  author: expect.any(String),
+                  title: expect.any(String),
+                  article_id: expect.any(Number),
+                  topic: expect.any(String),
+                  created_at: expect.any(String),
+                  votes: expect.any(Number),
+                  article_img_url: expect.any(String),
+                  comment_count: expect.any(Number),
+                });
+              });
+              expect(articles).toBeSortedBy(`${column}`, {
+                descending: true,
+              });
+            });
+        });
+      });
+      test("400: should return bad request if the user tries to sort by a non existant column", () => {
+        return request(app)
+          .get("/api/articles?sort_by=badRequest")
+          .expect(400)
+          .then(({ body }) => {
+            const { msg } = body;
+            expect(msg).toBe("Bad request");
+          });
+      });
+      describe("order", () => {
+        const orders = ["asc", "desc"];
+        orders.forEach((order) => {
+          test(`200: should return an array sorted by created at in ${order} order`, () => {
+            return request(app)
+              .get(`/api/articles?order=${order}`)
+              .expect(200)
+              .then(({ body }) => {
+                const { articles } = body;
+                expect(articles.length).toBe(13);
+                articles.forEach((article) => {
+                  expect(article).toMatchObject({
+                    author: expect.any(String),
+                    title: expect.any(String),
+                    article_id: expect.any(Number),
+                    topic: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: expect.any(Number),
+                    article_img_url: expect.any(String),
+                    comment_count: expect.any(Number),
+                  });
+                });
+                expect(articles).toBeSortedBy(`created_at`, {
+                  descending: (order === "desc")? true : false,
+                });
+              });
+          });
+          test("400: should return bad request if the user uses a bad sort order", () => {
+            return request(app)
+              .get("/api/articles?order=badRequest")
+              .expect(400)
+              .then(({ body }) => {
+                const { msg } = body;
+                expect(msg).toBe("Bad request");
+              });
+          });
+        });
+      });
+      describe("multiple queries work togethor", () => {
+        test("200, should correctly use multiple queries togethor without error", () => {
+          return request(app)
+            .get("/api/articles?sort_by=votes&order=asc&topic=mitch")
+            .expect(200)
+            .then(({ body }) => {
+              const { articles } = body;
+              expect(articles.length).toBe(12);
+              articles.forEach((article) => {
+                expect(article).toMatchObject({
+                  author: expect.any(String),
+                  title: expect.any(String),
+                  article_id: expect.any(Number),
+                  topic: expect.any(String),
+                  created_at: expect.any(String),
+                  votes: expect.any(Number),
+                  article_img_url: expect.any(String),
+                  comment_count: expect.any(Number),
+                });
+              });
+              expect(articles).toBeSortedBy("votes", {
+                descending: false,
+              });
+            });
+        });
+      });
+    });
   });
 });
 
