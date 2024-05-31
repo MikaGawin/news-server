@@ -1,6 +1,6 @@
 # Northcoders News API
 
-This project hosts the backend for a news API. This includes files for database setup and seeding aswell as the server application. A hosted version of the project can be found [here](https://news-server-2i86.onrender.com/API). The linked API page contains a list of current endpoints and details on how they are used.
+This project is the backend for a news service. This includes files for database setup and seeding aswell as the server application. A hosted version of the project can be found [here](https://news-server-2i86.onrender.com/API). The linked API page contains a list of current endpoints and details on how they are used.
 
 Please ensure that you have Node.js v22.0.0 or newer and PSQL v12.18 or newer set up on your machine following the psql documentation to make sure your user is properly set up.
 
