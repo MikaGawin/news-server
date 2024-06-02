@@ -466,22 +466,13 @@ describe("/api/users/:username", () => {
           });
         });
     });
-    xtest("404: should return 404, not found if given a valid but non existant username", () => {
+    test("404: should return 404, not found if given a valid but non existant username", () => {
       return request(app)
         .get("/api/users/unknown_user")
         .expect(404)
         .then(({ body }) => {
           const { msg } = body;
           expect(msg).toBe("User not found");
-        });
-    });
-    xtest("400, should return 400, invalid request when given an invalid id", () => {
-      return request(app)
-        .get("/api/users/123")
-        .expect(400)
-        .then(({ body }) => {
-          const { msg } = body;
-          expect(msg).toBe("Invalid request");
         });
     });
   });
