@@ -15,7 +15,10 @@ const {
   handleCustomError,
 } = require("./errorHandling/errorHandling");
 const { deleteCommentById } = require("./controllers/comments-controllers");
-const { getUsers } = require("./controllers/users-controllers");
+const {
+  getUsers,
+  getUserByUsername,
+} = require("./controllers/users-controllers");
 
 const app = express();
 
@@ -25,9 +28,11 @@ app.route("/api").get(getApi);
 
 app.route("/api/topics").get(getTopics);
 
-app.route("/api/articles").get(getArticles);
-
 app.route("/api/users").get(getUsers);
+
+app.route("/api/users/:username").get(getUserByUsername);
+
+app.route("/api/articles").get(getArticles);
 
 app
   .route("/api/articles/:article_id")

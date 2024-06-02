@@ -449,3 +449,40 @@ describe("/api/users", () => {
     });
   });
 });
+
+describe("/api/users/:username", () => {
+  describe("GET request", () => {
+    test("200: should return the requested username to the client", () => {
+      return request(app)
+        .get("/api/users/butter_bridge")
+        .expect(200)
+        .then(({ body }) => {
+          const { user } = body;
+          expect(user).toMatchObject({
+            username: "butter_bridge",
+            name: "jonny",
+            avatar_url:
+              "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+          });
+        });
+    });
+    xtest("404: should return 404, not found if given a valid but non existant username", () => {
+      return request(app)
+        .get("/api/users/unknown_user")
+        .expect(404)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe("User not found");
+        });
+    });
+    xtest("400, should return 400, invalid request when given an invalid id", () => {
+      return request(app)
+        .get("/api/users/123")
+        .expect(400)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe("Invalid request");
+        });
+    });
+  });
+});
