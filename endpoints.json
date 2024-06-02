@@ -22,6 +22,17 @@
       ]
     }
   },
+  "GET /api/users/username": {
+    "description": "serves the requested user",
+    "queries": [],
+    "exampleResponse": {
+      "topics": {
+        "username": "footballman",
+        "name": "James Giles",
+        "avatar_url": "https://pictureurl.com"
+      }
+    }
+  },
   "GET /api/articles": {
     "description": "serves an array of all articles",
     "queries": ["author", "topic", "sort_by", "order"],
