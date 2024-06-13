@@ -14,3 +14,22 @@ exports.removeCommentById = (commentId) => {
     }
   });
 };
+
+exports.updateCommentById = (commentId, { inc_votes: incrementVotes = 0 }) => {
+  const sqlQuery = `
+  UPDATE comments
+  SET votes = votes + $1
+  WHERE comment_id = $2
+  RETURNING *`;
+
+  return db.query(sqlQuery, [incrementVotes, commentId]).then(({ rows }) => {
+    if (!rows[0]) {
+      return Promise.reject({
+        status: 404,
+        msg: "Comment not found",
+      });
+    } else {
+      return rows[0];
+    }
+  });
+}

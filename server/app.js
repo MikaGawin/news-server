@@ -14,27 +14,46 @@ const {
   internalServerError,
   handleCustomError,
 } = require("./errorHandling/errorHandling");
-const { deleteCommentById } = require("./controllers/comments-controllers");
-const { getUsers } = require("./controllers/users-controllers");
+const {
+  deleteCommentById,
+  patchCommentById,
+} = require("./controllers/comments-controllers");
+const {
+  getUsers,
+  getUserByUsername,
+} = require("./controllers/users-controllers");
 
 const app = express();
 
 app.use(express.json());
 
-app.get("/api", getApi);
-app.get("/api/topics", getTopics);
-app.get("/api/articles", getArticles);
-app.get("/api/users", getUsers);
+app.route("/api").get(getApi);
 
-app.get("/api/articles/:article_id", getArticleById);
-app.patch("/api/articles/:article_id", patchArticleById);
+app.route("/api/topics").get(getTopics);
 
-app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
-app.post("/api/articles/:article_id/comments", postCommentToArticleById);
+app.route("/api/users").get(getUsers);
 
-app.delete("/api/comments/:comment_id", deleteCommentById);
+app.route("/api/users/:username").get(getUserByUsername);
+
+app.route("/api/articles").get(getArticles);
+
+app
+  .route("/api/articles/:article_id")
+  .get(getArticleById)
+  .patch(patchArticleById);
+
+app
+  .route("/api/articles/:article_id/comments")
+  .get(getCommentsByArticleId)
+  .post(postCommentToArticleById);
+
+app
+  .route("/api/comments/:comment_id")
+  .delete(deleteCommentById)
+  .patch(patchCommentById);
 
 app.all("*", invalidEndpoint);
+
 app.use(handleCustomError);
 app.use(invalidQuery);
 app.use(internalServerError);

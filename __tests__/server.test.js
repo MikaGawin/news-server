@@ -4,6 +4,7 @@ const data = require("../db/data/test-data");
 const seed = require("../db/seeds/seed");
 const request = require("supertest");
 const endpointsGuide = require("../endpoints.json");
+const comments = require("../db/data/test-data/comments");
 
 beforeEach(() => {
   return seed(data);
@@ -197,7 +198,7 @@ describe("/api/articles", () => {
                   });
                 });
                 expect(articles).toBeSortedBy(`created_at`, {
-                  descending: (order === "desc")? true : false,
+                  descending: order === "desc" ? true : false,
                 });
               });
           });
@@ -331,9 +332,9 @@ describe("/api/articles/:article_id", () => {
     });
     test("400, should return 400, bad request if inc_votes is not a valid data type", () => {
       return request(app)
-        .patch("/api/articles/badRequest")
+        .patch("/api/articles/1")
         .send({
-          inc_votes: "10",
+          inc_votes: "bad type",
         })
         .expect(400)
         .then(({ body }) => {
@@ -538,6 +539,78 @@ describe("/api/comments/:comment_id", () => {
         });
     });
   });
+  test("200: should update the article in the database and return the updated article", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({
+        inc_votes: 15,
+      })
+      .expect(200)
+      .then(({ body }) => {
+        const { comment } = body;
+        expect(comment).toMatchObject({
+          body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+          votes: 31,
+          author: "butter_bridge",
+          article_id: 9,
+          created_at: "2020-04-06T12:17:00.000Z",
+        });
+      });
+  });
+  test("200: should ignore invalid fields and return the article as is if no valid fields are listed to patch", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({
+        invalid_field: 1233,
+      })
+      .expect(200)
+      .then(({ body }) => {
+        const { comment } = body;
+        expect(comment).toMatchObject({
+          body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+          votes: 16,
+          author: "butter_bridge",
+          article_id: 9,
+          created_at: "2020-04-06T12:17:00.000Z",
+        });
+      });
+  });
+  test("400, should return 400, bad request if inc_votes is not a valid data type", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({
+        inc_votes: "bad type",
+      })
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Invalid request");
+      });
+  });
+  test("400, should return 400, invalid request when given an invalid id", () => {
+    return request(app)
+      .patch("/api/comments/badRequest")
+      .send({
+        inc_votes: 10,
+      })
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Invalid request");
+      });
+  });
+  test("404: should return 404, not found if given a valid but non existant id", () => {
+    return request(app)
+      .patch("/api/comments/666")
+      .send({
+        inc_votes: 10,
+      })
+      .expect(404)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Comment not found");
+      });
+  });
 });
 
 describe("/api/users", () => {
@@ -556,6 +629,34 @@ describe("/api/users", () => {
               avatar_url: expect.any(String),
             });
           });
+        });
+    });
+  });
+});
+
+describe("/api/users/:username", () => {
+  describe("GET request", () => {
+    test("200: should return the requested username to the client", () => {
+      return request(app)
+        .get("/api/users/butter_bridge")
+        .expect(200)
+        .then(({ body }) => {
+          const { user } = body;
+          expect(user).toMatchObject({
+            username: "butter_bridge",
+            name: "jonny",
+            avatar_url:
+              "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+          });
+        });
+    });
+    test("404: should return 404, not found if given a valid but non existant username", () => {
+      return request(app)
+        .get("/api/users/unknown_user")
+        .expect(404)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe("User not found");
         });
     });
   });
