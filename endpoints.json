@@ -118,6 +118,20 @@
       "article_id": "1"
     }
   },
+  "PATCH /api/comments/comment_id": {
+    "description": "updates data on a comment",
+    "example body": {
+      "inc_votes": 15
+    },
+    "exampleResponse": {
+      "comment_id": "1",
+      "votes": "25",
+      "created_at": "2021-07-09T20:11:00.000Z",
+      "author": "butter_bridge",
+      "body": "This article was good",
+      "article_id": "1"
+    }
+  },
   "DELETE /api/comments/comment_id": {
     "description": "removes the relevant comment from the database"
   }

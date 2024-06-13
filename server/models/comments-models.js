@@ -32,4 +32,4 @@ exports.updateCommentById = (commentId, { inc_votes: incrementVotes = 0 }) => {
       return rows[0];
     }
   });
-}
+};
