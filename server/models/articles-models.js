@@ -124,3 +124,27 @@ exports.updateArticleById = (articleId, { inc_votes: incrementVotes = 0 }) => {
     }
   });
 };
+
+exports.insertArticle = ({ author, title, body, topic, article_img_url }) => {
+  if (!author || !body || !title || !topic) {
+    return Promise.reject({ status: 400, msg: "Incomplete body" });
+  }
+  const articleData = [author, body, title, topic];
+  const hasImage = !!article_img_url;
+  if(hasImage) {
+    articleData.push(article_img_url)
+  }
+
+  const sqlQuery = `
+  INSERT INTO articles
+  (author, body, title, topic ${hasImage? `, article_img_url` : ""}) 
+  VALUES 
+  ($1, $2, $3, $4 ${hasImage? ", $5" : ""})
+  RETURNING *;`;
+
+
+  return db.query(sqlQuery, articleData).then(({ rows }) => {
+    rows[0].comment_count = 0
+    return rows[0];
+  });
+};

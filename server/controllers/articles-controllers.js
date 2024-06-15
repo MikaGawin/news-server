@@ -4,6 +4,7 @@ const {
   selectCommentsByArticleId,
   insertCommentToArticleById,
   updateArticleById,
+  insertArticle,
 } = require("../models/articles-models");
 
 const { checkExists } = require("../models/utils-models");
@@ -65,6 +66,15 @@ exports.patchArticleById = (req, res, next) => {
   updateArticleById(articleId, updatedFields)
     .then((article) => {
       res.status(200).send({ article });
+    })
+    .catch(next);
+};
+
+exports.postArticle = (req, res, next) => {
+  const newArticle = req.body;
+  insertArticle(newArticle)
+    .then((article) => {
+      res.status(201).send({ article });
     })
     .catch(next);
 };

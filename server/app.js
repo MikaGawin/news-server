@@ -3,6 +3,7 @@ const { getApi } = require("./controllers/api-controllers");
 const { getTopics } = require("./controllers/topics-controllers");
 const {
   getArticles,
+  postArticle,
   getArticleById,
   getCommentsByArticleId,
   postCommentToArticleById,
@@ -35,7 +36,7 @@ app.route("/api/users").get(getUsers);
 
 app.route("/api/users/:username").get(getUserByUsername);
 
-app.route("/api/articles").get(getArticles);
+app.route("/api/articles").get(getArticles).post(postArticle);
 
 app
   .route("/api/articles/:article_id")

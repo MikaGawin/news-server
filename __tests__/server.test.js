@@ -241,6 +241,171 @@ describe("/api/articles", () => {
       });
     });
   });
+  describe("POST request", () => {
+    test("201: inserts a new comment on the article into the database and should return a copy of the comment added", () => {
+      return request(app)
+        .post("/api/articles")
+        .send({
+          author: "icellusedkars",
+          title: "Cats or dogs?",
+          body: "Cats are worse than dogs",
+          topic: "cats",
+          article_img_url: "https://img.com",
+        })
+        .expect(201)
+        .then(({ body }) => {
+          const { article } = body;
+          expect(article).toMatchObject({
+            article_id: expect.any(Number),
+            author: "icellusedkars",
+            title: "Cats or dogs?",
+            body: "Cats are worse than dogs",
+            topic: "cats",
+            article_img_url: "https://img.com",
+            created_at: expect.any(String),
+            votes: 0,
+            comment_count: 0,
+          });
+        });
+    });
+    test("201: img url defaults if not provided", () => {
+      return request(app)
+        .post("/api/articles")
+        .send({
+          author: "icellusedkars",
+          title: "Cats or dogs?",
+          body: "Cats are worse than dogs",
+          topic: "cats",
+        })
+        .expect(201)
+        .then(({ body }) => {
+          const { article } = body;
+          expect(article).toMatchObject({
+            article_img_url:
+              "https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700",
+          });
+        });
+    });
+    test("201: Should run as normal when given an additional unknown field in the body", () => {
+      return request(app)
+        .post("/api/articles")
+        .send({
+          author: "icellusedkars",
+          title: "Cats or dogs?",
+          body: "Cats are worse than dogs",
+          topic: "cats",
+          article_img_url: "https://img.com",
+          unknownField: "unknown",
+        })
+        .expect(201)
+        .then(({ body }) => {
+          const { article } = body;
+          expect(article).toMatchObject({
+            article_id: expect.any(Number),
+            author: "icellusedkars",
+            title: "Cats or dogs?",
+            body: "Cats are worse than dogs",
+            topic: "cats",
+            article_img_url: "https://img.com",
+            created_at: expect.any(String),
+            votes: 0,
+            comment_count: 0,
+          });
+        });
+    });
+    test("404: returns an error if the username is not recognised", () => {
+      return request(app)
+        .post("/api/articles")
+        .send({
+          author: "unknownUser",
+          title: "Cats or dogs?",
+          body: "Cats are worse than dogs",
+          topic: "cats",
+          article_img_url: "https://img.com",
+        })
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid selection");
+        });
+    });
+    test("404: returns an error if the topic is not recognised", () => {
+      return request(app)
+        .post("/api/articles")
+        .send({
+          author: "unknownUser",
+          title: "Cats or dogs?",
+          body: "Cats are worse than dogs",
+          topic: "unknownTopic",
+          article_img_url: "https://img.com",
+        })
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid selection");
+        });
+    });
+    describe("400: returns an error if missing reqiured fields", () => {
+      test("username missing", () => {
+        return request(app)
+          .post("/api/articles")
+          .send({
+            author: undefined,
+            title: "Cats or dogs?",
+            body: "Cats are worse than dogs",
+            topic: "cats",
+            article_img_url: "https://img.com",
+          })
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("Incomplete body");
+          });
+      });
+      test("title missing", () => {
+        return request(app)
+          .post("/api/articles")
+          .send({
+            author: "unknownUser",
+            title: undefined,
+            body: "Cats are worse than dogs",
+            topic: "cats",
+            article_img_url: "https://img.com",
+          })
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("Incomplete body");
+          });
+      });
+      test("body missing", () => {
+        return request(app)
+          .post("/api/articles")
+          .send({
+            author: "unknownUser",
+            title: "Cats or dogs?",
+            body: undefined,
+            topic: "cats",
+            article_img_url: "https://img.com",
+          })
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("Incomplete body");
+          });
+      });
+      test("topic missing", () => {
+        return request(app)
+          .post("/api/articles")
+          .send({
+            author: "unknownUser",
+            title: "Cats or dogs?",
+            body: "Cats are worse than dogs",
+            topic: undefined,
+            article_img_url: "https://img.com",
+          })
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("Incomplete body");
+          });
+      });
+    });
+  });
 });
 
 describe("/api/articles/:article_id", () => {
