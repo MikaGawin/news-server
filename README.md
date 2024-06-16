@@ -1,4 +1,4 @@
-# Northcoders News API
+# News API
 
 This project is the backend for a news service. This includes files for database setup and seeding aswell as the server application. A hosted version of the project can be found [here](https://news-server-2i86.onrender.com/API). The linked API page contains a list of current endpoints and details on how they are used.
 
