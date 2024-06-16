@@ -3,7 +3,8 @@ const {
   selectArticleById,
   updateArticleById,
   insertArticle,
-  selectArticlesCount
+  selectArticlesCount,
+  removeArticleById,
 } = require("../models/articles-models");
 
 const { checkExists } = require("../models/utils-models");
@@ -46,6 +47,14 @@ exports.postArticle = (req, res, next) => {
   insertArticle(newArticle)
     .then((article) => {
       res.status(201).send({ article });
+    })
+    .catch(next);
+};
+exports.deleteArticleById = (req, res, next) => {
+  const { article_id: articleId } = req.params
+  removeArticleById(articleId)
+    .then(() => {
+      res.status(204).send();
     })
     .catch(next);
 };

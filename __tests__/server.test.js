@@ -105,7 +105,7 @@ describe("/api/topics", () => {
         return request(app)
           .post("/api/topics")
           .send({
-            description: "slug is missing"
+            description: "slug is missing",
           })
           .expect(400)
           .then(({ body }) => {
@@ -654,6 +654,29 @@ describe("/api/articles/:article_id", () => {
         .then(({ body }) => {
           const { msg } = body;
           expect(msg).toBe("Id not found");
+        });
+    });
+  });
+  describe("DELETE request", () => {
+    test("204 deletes the requested article", () => {
+      return request(app).delete("/api/articles/1").expect(204);
+    });
+    test("400 returns an error if the article id is invalid", () => {
+      return request(app)
+        .delete("/api/articles/badRequest")
+        .expect(400)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe("Invalid request");
+        });
+    });
+    test("404 returns an error if the article id is valid but non existant", () => {
+      return request(app)
+        .delete("/api/articles/666")
+        .expect(404)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe("Article not found");
         });
     });
   });

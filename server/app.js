@@ -6,6 +6,7 @@ const {
   postArticle,
   getArticleById,
   patchArticleById,
+  deleteArticleById,
 } = require("./controllers/articles-controllers");
 const {
   invalidEndpoint,
@@ -41,7 +42,8 @@ app.route("/api/articles").get(getArticles).post(postArticle);
 app
   .route("/api/articles/:article_id")
   .get(getArticleById)
-  .patch(patchArticleById);
+  .patch(patchArticleById)
+  .delete(deleteArticleById);
 
 app
   .route("/api/articles/:article_id/comments")

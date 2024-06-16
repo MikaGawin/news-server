@@ -137,3 +137,17 @@ exports.insertArticle = ({ author, title, body, topic, article_img_url }) => {
     return rows[0];
   });
 };
+exports.removeArticleById = (articleId) => {
+  const sqlQuery = `
+  DELETE FROM comments
+  WHERE comment_id = $1`;
+
+  return db.query(sqlQuery, [articleId]).then(({ rowCount }) => {
+    if (!rowCount) {
+      return Promise.reject({
+        msg: "Article not found",
+        status: 404,
+      });
+    }
+  });
+};
