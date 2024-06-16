@@ -5,6 +5,7 @@ const {
   insertCommentToArticleById,
   updateArticleById,
   insertArticle,
+  selectArticlesCount
 } = require("../models/articles-models");
 
 const { checkExists } = require("../models/utils-models");
@@ -12,18 +13,16 @@ const { checkExists } = require("../models/utils-models");
 exports.getArticles = (req, res, next) => {
   const queries = req.query;
   const articlesAndQueries = [];
-
   articlesAndQueries.push(selectArticles(queries));
-
+  articlesAndQueries.push(selectArticlesCount(queries));
   if (queries.topic) {
     articlesAndQueries.push(
       checkExists("topics", "slug", queries.topic, "topic")
     );
   }
-
   Promise.all(articlesAndQueries)
-    .then(([articles]) => {
-      res.status(200).send({ articles });
+    .then(([articles, articlesCount]) => {
+      res.status(200).send({ articles, articlesCount });
     })
     .catch(next);
 };

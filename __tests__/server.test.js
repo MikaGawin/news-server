@@ -25,7 +25,6 @@ describe("general errors", () => {
       });
   });
 });
-
 describe("/api", () => {
   test("Get 200: should return an object containing the available endpoints", () => {
     return request(app)
@@ -37,7 +36,6 @@ describe("/api", () => {
       });
   });
 });
-
 describe("/api/topics", () => {
   describe("GET requests", () => {
     test("200: should return an array of topics to the client", () => {
@@ -57,7 +55,6 @@ describe("/api/topics", () => {
     });
   });
 });
-
 describe("/api/articles", () => {
   describe("GET requests", () => {
     test("200: should return an array of articles to the client", () => {
@@ -66,7 +63,7 @@ describe("/api/articles", () => {
         .expect(200)
         .then(({ body }) => {
           const { articles } = body;
-          expect(articles.length).toBe(13);
+          expect(articles.length).toBe(10);
           articles.forEach((article) => {
             expect(article).toMatchObject({
               author: expect.any(String),
@@ -93,7 +90,7 @@ describe("/api/articles", () => {
           .expect(200)
           .then(({ body }) => {
             const { articles } = body;
-            expect(articles.length).toBe(12);
+            expect(articles.length).toBe(10);
             articles.forEach((article) => {
               expect(article).toMatchObject({
                 author: expect.any(String),
@@ -129,6 +126,75 @@ describe("/api/articles", () => {
           });
       });
     });
+    describe("pagination queries", () => {
+      test("articles should return the total count of articles", () => {
+        return request(app)
+          .get("/api/articles")
+          .expect(200)
+          .then(({ body }) => {
+            const { articlesCount } = body;
+            expect(articlesCount).toBe(13);
+          });
+      });
+      test("articles should return the total count of articles with the current filter", () => {
+        return request(app)
+          .get("/api/articles?topic=mitch")
+          .expect(200)
+          .then(({ body }) => {
+            const { articlesCount } = body;
+            expect(articlesCount).toBe(12);
+          });
+      });
+      test("should limit the number of results returned to the requested number", () => {
+        return request(app)
+          .get("/api/articles?limit=12")
+          .expect(200)
+          .then(({ body }) => {
+            const { articles } = body;
+            expect(articles.length).toBe(12);
+          });
+      });
+      test("should allow you to specify what result to start from", () => {
+        return request(app)
+          .get("/api/articles?p=2")
+          .expect(200)
+          .then(({ body }) => {
+            const { articles } = body;
+            expect(articles.length).toBe(3);
+            expect(articles[0]).toMatchObject({
+              article_id: 8,
+            });
+            expect(articles).toBeSortedBy("created_at", {
+              descending: true,
+            });
+          });
+      });
+      test("limit defaults to 10", () => {
+        return request(app)
+          .get("/api/articles")
+          .expect(200)
+          .then(({ body }) => {
+            const { articles } = body;
+            expect(articles.length).toBe(10);
+          });
+      });
+      test("errors if limit is bad data type", () => {
+        return request(app)
+          .get("/api/articles?limit=badRequest")
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("Bad request");
+          });
+      });
+      test("errors if page is a bad data type", () => {
+        return request(app)
+          .get("/api/articles?p=badRequest")
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("Bad request");
+          });
+      });
+    });
     describe("order by", () => {
       const orderableColumns = [
         "author",
@@ -147,7 +213,7 @@ describe("/api/articles", () => {
             .expect(200)
             .then(({ body }) => {
               const { articles } = body;
-              expect(articles.length).toBe(13);
+              expect(articles.length).toBe(10);
               articles.forEach((article) => {
                 expect(article).toMatchObject({
                   author: expect.any(String),
@@ -184,7 +250,7 @@ describe("/api/articles", () => {
               .expect(200)
               .then(({ body }) => {
                 const { articles } = body;
-                expect(articles.length).toBe(13);
+                expect(articles.length).toBe(10);
                 articles.forEach((article) => {
                   expect(article).toMatchObject({
                     author: expect.any(String),
@@ -220,7 +286,7 @@ describe("/api/articles", () => {
             .expect(200)
             .then(({ body }) => {
               const { articles } = body;
-              expect(articles.length).toBe(12);
+              expect(articles.length).toBe(10);
               articles.forEach((article) => {
                 expect(article).toMatchObject({
                   author: expect.any(String),
@@ -407,7 +473,6 @@ describe("/api/articles", () => {
     });
   });
 });
-
 describe("/api/articles/:article_id", () => {
   describe("GET request", () => {
     test("200: should return the requested article to the client", () => {
@@ -533,7 +598,6 @@ describe("/api/articles/:article_id", () => {
     });
   });
 });
-
 describe("/api/articles/:article_id/comments", () => {
   describe("GET request", () => {
     test("200: should return the an array of comments for the requested article", () => {
@@ -679,7 +743,6 @@ describe("/api/articles/:article_id/comments", () => {
     });
   });
 });
-
 describe("/api/comments/:comment_id", () => {
   describe("DELETE request", () => {
     test("204 deletes selected comment and returns no content", () => {
@@ -777,7 +840,6 @@ describe("/api/comments/:comment_id", () => {
       });
   });
 });
-
 describe("/api/users", () => {
   describe("GET requests", () => {
     test("200: should return an array of users to the client", () => {
@@ -798,7 +860,6 @@ describe("/api/users", () => {
     });
   });
 });
-
 describe("/api/users/:username", () => {
   describe("GET request", () => {
     test("200: should return the requested username to the client", () => {

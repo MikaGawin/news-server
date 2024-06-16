@@ -5,6 +5,8 @@ exports.selectArticles = ({
   topic,
   sort_by: sortBy = "created_at",
   order = "desc",
+  limit = 10,
+  p,
 }) => {
   const orderableColumns = [
     "author",
@@ -16,21 +18,18 @@ exports.selectArticles = ({
     "article_img_url",
     "comment_count",
   ];
-
   if (order.toLowerCase() !== "desc" && order.toLowerCase() !== "asc") {
     return Promise.reject({
       status: 400,
       msg: "Bad request",
     });
   }
-
   if (!orderableColumns.includes(sortBy.toLowerCase())) {
     return Promise.reject({
       status: 400,
       msg: "Bad request",
     });
   }
-
   const queries = [];
   let sqlQuery = `
     SELECT  a.article_id, title, a.author, topic, a.created_at, a.votes, article_img_url, COUNT(comment_id) :: INT AS comment_count
@@ -46,11 +45,28 @@ exports.selectArticles = ({
 
   sqlQuery += `
     GROUP BY a.article_id
-    ORDER BY ${sortBy} ${order};
+    ORDER BY ${sortBy} ${order}
+    LIMIT ${limit} ${p ? `OFFSET ${(p - 1) * limit}` : ""};
   `;
 
   return db.query(sqlQuery, queries).then(({ rows }) => {
     return rows;
+  });
+};
+
+exports.selectArticlesCount = ({ topic }) => {
+  const queries = [];
+  let sqlQuery = `
+    SELECT COUNT(article_id) :: INT
+    FROM articles
+  `;
+
+  if (topic) {
+    sqlQuery += `WHERE topic = $1`;
+    queries.push(topic);
+  }
+  return db.query(sqlQuery, queries).then(({rows}) => {
+    return rows[0].count
   });
 };
 
@@ -131,20 +147,19 @@ exports.insertArticle = ({ author, title, body, topic, article_img_url }) => {
   }
   const articleData = [author, body, title, topic];
   const hasImage = !!article_img_url;
-  if(hasImage) {
-    articleData.push(article_img_url)
+  if (hasImage) {
+    articleData.push(article_img_url);
   }
 
   const sqlQuery = `
   INSERT INTO articles
-  (author, body, title, topic ${hasImage? `, article_img_url` : ""}) 
+  (author, body, title, topic ${hasImage ? `, article_img_url` : ""}) 
   VALUES 
-  ($1, $2, $3, $4 ${hasImage? ", $5" : ""})
+  ($1, $2, $3, $4 ${hasImage ? ", $5" : ""})
   RETURNING *;`;
 
-
   return db.query(sqlQuery, articleData).then(({ rows }) => {
-    rows[0].comment_count = 0
+    rows[0].comment_count = 0;
     return rows[0];
   });
 };
