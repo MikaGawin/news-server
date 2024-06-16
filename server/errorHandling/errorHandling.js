@@ -15,6 +15,8 @@ exports.invalidQuery = (err, req, res, next) => {
     res.status(400).send({ msg: "Invalid request" });
   } else if (err.code === "23503") {
     res.status(404).send({ msg: "Invalid selection" });
+  } else if (err.code === "23505") {
+    res.status(400).send({ msg: "Key already exists" });
   } else {
     next(err);
   }

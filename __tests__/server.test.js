@@ -54,6 +54,66 @@ describe("/api/topics", () => {
         });
     });
   });
+  describe("POST request", () => {
+    test("201: inserts a new topic into the database and returns a copy of the topic", () => {
+      return request(app)
+        .post("/api/topics")
+        .send({
+          slug: "topic name here",
+          description: "description here",
+        })
+        .expect(201)
+        .then(({ body }) => {
+          const { topic } = body;
+          expect(topic).toMatchObject({
+            slug: "topic name here",
+            description: "description here",
+          });
+        });
+    });
+    test("201: Should run as normal when given an additional unknown field in the body", () => {
+      return request(app)
+        .post("/api/topics")
+        .send({
+          slug: "topic name here",
+          description: "description here",
+          unknownField: "unknown",
+        })
+        .expect(201)
+        .then(({ body }) => {
+          const { topic } = body;
+          expect(topic).toMatchObject({
+            slug: "topic name here",
+            description: "description here",
+          });
+        });
+    });
+    test("400: should return an error if the topic already exists", () => {
+      return request(app)
+        .post("/api/topics")
+        .send({
+          slug: "cats",
+          description: "description here",
+        })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Key already exists");
+        });
+    });
+    describe("400: returns an error if missing reqiured fields", () => {
+      test("slug missing", () => {
+        return request(app)
+          .post("/api/topics")
+          .send({
+            description: "slug is missing"
+          })
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("Incomplete body");
+          });
+      });
+    });
+  });
 });
 describe("/api/articles", () => {
   describe("GET requests", () => {
@@ -709,7 +769,7 @@ describe("/api/articles/:article_id/comments", () => {
           });
       });
     });
-  })
+  });
   describe("POST request", () => {
     test("201: inserts a new comment on the article into the database and should return a copy of the comment added", () => {
       return request(app)

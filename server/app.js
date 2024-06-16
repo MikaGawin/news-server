@@ -1,6 +1,6 @@
 const express = require("express");
 const { getApi } = require("./controllers/api-controllers");
-const { getTopics } = require("./controllers/topics-controllers");
+const { getTopics, postTopic } = require("./controllers/topics-controllers");
 const {
   getArticles,
   postArticle,
@@ -30,7 +30,7 @@ app.use(express.json());
 
 app.route("/api").get(getApi);
 
-app.route("/api/topics").get(getTopics);
+app.route("/api/topics").get(getTopics).post(postTopic);
 
 app.route("/api/users").get(getUsers);
 
