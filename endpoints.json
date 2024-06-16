@@ -110,6 +110,9 @@
       "article_img_url": "https://pictureurl.com"
     }
   },
+  "DELETE /api/articles/:article_id": {
+    "description": "Removes article and all asscociated comments"
+  },
   "GET /api/articles/:article_id/comments": {
     "description": "serves an array of all comments on the requested article",
     "queries": ["limit", "p"],
