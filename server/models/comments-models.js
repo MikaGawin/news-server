@@ -40,7 +40,7 @@ exports.selectCommentsByArticleId = (articleId, { limit = 10, p }) => {
   WHERE
   article_id = $1
   ORDER BY created_at DESC`;
-  
+
   let queryNum = 2;
   sqlQuery += `
     LIMIT $${queryNum}
