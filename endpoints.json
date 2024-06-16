@@ -9,6 +9,13 @@
       "topics": [{ "slug": "football", "description": "Footie!" }]
     }
   },
+  "POST /api/topics": {
+    "description": "adds the supplied topic to the database",
+    "example body": { "slug": "dogs", "description": "dogs are great pets" },
+    "exampleResponse": {
+      "topic": { "slug": "dogs", "description": "dogs are great pets" }
+    }
+  },
   "GET /api/users": {
     "description": "serves an array of all users",
     "queries": [],
