@@ -1,8 +1,6 @@
 const {
   selectArticles,
   selectArticleById,
-  selectCommentsByArticleId,
-  insertCommentToArticleById,
   updateArticleById,
   insertArticle,
   selectArticlesCount
@@ -26,7 +24,6 @@ exports.getArticles = (req, res, next) => {
     })
     .catch(next);
 };
-
 exports.getArticleById = (req, res, next) => {
   const { article_id: articleId } = req.params;
   selectArticleById(articleId)
@@ -35,30 +32,6 @@ exports.getArticleById = (req, res, next) => {
     })
     .catch(next);
 };
-
-exports.getCommentsByArticleId = (req, res, next) => {
-  const { article_id: articleId } = req.params;
-  const commentsAndArticles = [
-    selectCommentsByArticleId(articleId),
-    selectArticleById(articleId),
-  ];
-  return Promise.all(commentsAndArticles)
-    .then(([comments]) => {
-      res.status(200).send({ comments });
-    })
-    .catch(next);
-};
-
-exports.postCommentToArticleById = (req, res, next) => {
-  const newComment = req.body;
-  const { article_id: articleId } = req.params;
-  insertCommentToArticleById(articleId, newComment)
-    .then((comment) => {
-      res.status(201).send({ comment });
-    })
-    .catch(next);
-};
-
 exports.patchArticleById = (req, res, next) => {
   const updatedFields = req.body;
   const { article_id: articleId } = req.params;
@@ -68,7 +41,6 @@ exports.patchArticleById = (req, res, next) => {
     })
     .catch(next);
 };
-
 exports.postArticle = (req, res, next) => {
   const newArticle = req.body;
   insertArticle(newArticle)

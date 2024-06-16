@@ -8,6 +8,7 @@ exports.selectArticles = ({
   limit = 10,
   p,
 }) => {
+  let queryNum = 1;
   const orderableColumns = [
     "author",
     "title",
@@ -39,21 +40,28 @@ exports.selectArticles = ({
   `;
 
   if (topic) {
-    sqlQuery += `WHERE topic = $1`;
+    sqlQuery += `WHERE topic = $${queryNum}`;
     queries.push(topic);
+    queryNum++;
   }
-
   sqlQuery += `
     GROUP BY a.article_id
     ORDER BY ${sortBy} ${order}
-    LIMIT ${limit} ${p ? `OFFSET ${(p - 1) * limit}` : ""};
+    LIMIT $${queryNum}
   `;
+  queries.push(limit);
+  queryNum++;
 
+  if (!!p) {
+    const pageOffset = (p - 1) * limit;
+    sqlQuery += `OFFSET $${queryNum}`;
+    queries.push(pageOffset);
+    queryNum++;
+  }
   return db.query(sqlQuery, queries).then(({ rows }) => {
     return rows;
   });
 };
-
 exports.selectArticlesCount = ({ topic }) => {
   const queries = [];
   let sqlQuery = `
@@ -65,11 +73,10 @@ exports.selectArticlesCount = ({ topic }) => {
     sqlQuery += `WHERE topic = $1`;
     queries.push(topic);
   }
-  return db.query(sqlQuery, queries).then(({rows}) => {
-    return rows[0].count
+  return db.query(sqlQuery, queries).then(({ rows }) => {
+    return rows[0].count;
   });
 };
-
 exports.selectArticleById = (articleId) => {
   const sqlQuery = `
     SELECT 
@@ -90,38 +97,6 @@ exports.selectArticleById = (articleId) => {
     return rows[0];
   });
 };
-
-exports.selectCommentsByArticleId = (articleId) => {
-  const sqlQuery = `
-    SELECT *
-    FROM comments
-    WHERE
-    article_id = $1
-    ORDER BY created_at DESC;`;
-
-  return db.query(sqlQuery, [articleId]).then(({ rows }) => {
-    return rows;
-  });
-};
-
-exports.insertCommentToArticleById = (articleId, { username, body }) => {
-  if (!username || !body) {
-    return Promise.reject({ status: 400, msg: "Incomplete body" });
-  }
-  const sqlQuery = `
-  INSERT INTO comments
-  (article_id, author, body) 
-  VALUES 
-  ($1, $2, $3)
-  RETURNING *;`;
-
-  const commentData = [articleId, username, body];
-
-  return db.query(sqlQuery, commentData).then(({ rows }) => {
-    return rows[0];
-  });
-};
-
 exports.updateArticleById = (articleId, { inc_votes: incrementVotes = 0 }) => {
   const sqlQuery = `
   UPDATE articles
@@ -140,7 +115,6 @@ exports.updateArticleById = (articleId, { inc_votes: incrementVotes = 0 }) => {
     }
   });
 };
-
 exports.insertArticle = ({ author, title, body, topic, article_img_url }) => {
   if (!author || !body || !title || !topic) {
     return Promise.reject({ status: 400, msg: "Incomplete body" });

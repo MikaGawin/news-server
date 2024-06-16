@@ -183,7 +183,7 @@ describe("/api/articles", () => {
           .get("/api/articles?limit=badRequest")
           .expect(400)
           .then(({ body }) => {
-            expect(body.msg).toBe("Bad request");
+            expect(body.msg).toBe("Invalid request");
           });
       });
       test("errors if page is a bad data type", () => {
@@ -191,7 +191,7 @@ describe("/api/articles", () => {
           .get("/api/articles?p=badRequest")
           .expect(400)
           .then(({ body }) => {
-            expect(body.msg).toBe("Bad request");
+            expect(body.msg).toBe("Invalid request");
           });
       });
     });
@@ -606,7 +606,7 @@ describe("/api/articles/:article_id/comments", () => {
         .expect(200)
         .then(({ body }) => {
           const { comments } = body;
-          expect(comments).toBeArrayOfSize(11);
+          expect(comments).toBeArrayOfSize(10);
           comments.forEach((comment) => {
             expect(comment).toMatchObject({
               comment_id: expect.any(Number),
@@ -650,6 +650,66 @@ describe("/api/articles/:article_id/comments", () => {
         });
     });
   });
+  describe("GET request pagination", () => {
+    describe("pagination queries", () => {
+      test("articles should return the total count of articles", () => {
+        return request(app)
+          .get("/api/articles/1/comments")
+          .expect(200)
+          .then(({ body }) => {
+            const { commentCount } = body;
+            expect(commentCount).toBe(11);
+          });
+      });
+
+      test("should limit the number of results returned to the requested number", () => {
+        return request(app)
+          .get("/api/articles/1/comments?limit=3")
+          .expect(200)
+          .then(({ body }) => {
+            const { comments } = body;
+            expect(comments.length).toBe(3);
+          });
+      });
+      test("should allow you to specify what result to start from", () => {
+        return request(app)
+          .get("/api/articles/1/comments?p=2")
+          .expect(200)
+          .then(({ body }) => {
+            const { comments } = body;
+            expect(comments.length).toBe(1);
+            expect(comments[0]).toMatchObject({
+              comment_id: 9,
+            });
+          });
+      });
+      test("limit defaults to 10", () => {
+        return request(app)
+          .get("/api/articles/1/comments")
+          .expect(200)
+          .then(({ body }) => {
+            const { comments } = body;
+            expect(comments.length).toBe(10);
+          });
+      });
+      test("errors if limit is bad data type", () => {
+        return request(app)
+          .get("/api/articles/1/comments?limit=badRequest")
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("Invalid request");
+          });
+      });
+      test("errors if page is a bad data type", () => {
+        return request(app)
+          .get("/api/articles/1/comments?p=badRequest")
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("Invalid request");
+          });
+      });
+    });
+  })
   describe("POST request", () => {
     test("201: inserts a new comment on the article into the database and should return a copy of the comment added", () => {
       return request(app)

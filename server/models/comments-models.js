@@ -14,7 +14,6 @@ exports.removeCommentById = (commentId) => {
     }
   });
 };
-
 exports.updateCommentById = (commentId, { inc_votes: incrementVotes = 0 }) => {
   const sqlQuery = `
   UPDATE comments
@@ -31,5 +30,60 @@ exports.updateCommentById = (commentId, { inc_votes: incrementVotes = 0 }) => {
     } else {
       return rows[0];
     }
+  });
+};
+exports.selectCommentsByArticleId = (articleId, { limit = 10, p }) => {
+  const queryParams = [articleId];
+  let sqlQuery = `
+  SELECT *
+  FROM comments
+  WHERE
+  article_id = $1
+  ORDER BY created_at DESC`;
+  
+  let queryNum = 2;
+  sqlQuery += `
+    LIMIT $${queryNum}
+  `;
+  queryParams.push(limit);
+  queryNum++;
+
+  if (!!p) {
+    const pageOffset = (p - 1) * limit;
+    sqlQuery += `OFFSET $${queryNum}`;
+    queryParams.push(pageOffset);
+    queryNum++;
+  }
+
+  return db.query(sqlQuery, queryParams).then(({ rows }) => {
+    return rows;
+  });
+};
+exports.selectCommentCountByArticleId = (articleId) => {
+  const sqlQuery = `
+    SELECT COUNT(comment_id) :: INT
+    FROM comments
+    WHERE
+    article_id = $1;`;
+
+  return db.query(sqlQuery, [articleId]).then(({ rows }) => {
+    return rows[0].count;
+  });
+};
+exports.insertCommentToArticleById = (articleId, { username, body }) => {
+  if (!username || !body) {
+    return Promise.reject({ status: 400, msg: "Incomplete body" });
+  }
+  const sqlQuery = `
+  INSERT INTO comments
+  (article_id, author, body) 
+  VALUES 
+  ($1, $2, $3)
+  RETURNING *;`;
+
+  const commentData = [articleId, username, body];
+
+  return db.query(sqlQuery, commentData).then(({ rows }) => {
+    return rows[0];
   });
 };

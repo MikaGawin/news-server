@@ -5,8 +5,6 @@ const {
   getArticles,
   postArticle,
   getArticleById,
-  getCommentsByArticleId,
-  postCommentToArticleById,
   patchArticleById,
 } = require("./controllers/articles-controllers");
 const {
@@ -16,6 +14,8 @@ const {
   handleCustomError,
 } = require("./errorHandling/errorHandling");
 const {
+  getCommentsByArticleId,
+  postCommentToArticleById,
   deleteCommentById,
   patchCommentById,
 } = require("./controllers/comments-controllers");
