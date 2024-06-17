@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const { getApi } = require("./controllers/api-controllers");
 const { getTopics, postTopic } = require("./controllers/topics-controllers");
 const {
@@ -26,7 +27,7 @@ const {
 } = require("./controllers/users-controllers");
 
 const app = express();
-
+app.use(cors());
 app.use(express.json());
 
 app.route("/api").get(getApi);

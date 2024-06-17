@@ -44,6 +44,7 @@ exports.selectArticles = ({
     queries.push(topic);
     queryNum++;
   }
+  
   sqlQuery += `
     GROUP BY a.article_id
     ORDER BY ${sortBy} ${order}
