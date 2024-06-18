@@ -141,6 +141,25 @@ describe("/api/articles", () => {
           });
         });
     });
+    test("200: articles should have the author_avatar and sample_body properties", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body }) => {
+          const { articles } = body;
+          expect(articles.length).toBe(10);
+          articles.forEach((article) => {
+            expect(article).toMatchObject({
+              author_avatar: expect.any(String),
+              sample_body: expect.any(String),
+            });
+            expect(article.sample_body.length <= 100);
+          });
+          expect(articles).toBeSortedBy("created_at", {
+            descending: true,
+          });
+        });
+    });
   });
   describe("GET requests with queries", () => {
     describe("query by topic", () => {

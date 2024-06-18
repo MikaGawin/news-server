@@ -33,10 +33,12 @@ exports.selectArticles = ({
   }
   const queries = [];
   let sqlQuery = `
-    SELECT  a.article_id, title, a.author, topic, a.created_at, a.votes, article_img_url, COUNT(comment_id) :: INT AS comment_count
+    SELECT  a.article_id, title, a.author, topic, a.created_at, a.votes, article_img_url, COUNT(comment_id) :: INT AS comment_count, LEFT(a.body, 100) AS sample_body, users.avatar_url AS author_avatar
     FROM articles AS a
     LEFT JOIN comments 
     ON a.article_id = comments.article_id
+    LEFT JOIN users
+    ON a.author = users.username
   `;
 
   if (topic) {
@@ -44,9 +46,9 @@ exports.selectArticles = ({
     queries.push(topic);
     queryNum++;
   }
-  
+
   sqlQuery += `
-    GROUP BY a.article_id
+    GROUP BY a.article_id, users.avatar_url
     ORDER BY ${sortBy} ${order}
     LIMIT $${queryNum}
   `;
