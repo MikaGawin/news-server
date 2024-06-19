@@ -724,6 +724,23 @@ describe("/api/articles/:article_id/comments", () => {
           });
         });
     });
+    test("200: articles should have the author_avatar", () => {
+      return request(app)
+        .get("/api/articles/1/comments")
+        .expect(200)
+        .then(({ body }) => {
+          const { comments } = body;
+          expect(comments.length).toBe(10);
+          comments.forEach((comments) => {
+            expect(comments).toMatchObject({
+              author_avatar: expect.any(String),
+            });
+          });
+          expect(comments).toBeSortedBy("created_at", {
+            descending: true,
+          });
+        });
+    });
     test("200: should return the an empty array if the article exists but has not comments", () => {
       return request(app)
         .get("/api/articles/2/comments")

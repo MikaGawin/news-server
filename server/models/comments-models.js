@@ -35,8 +35,10 @@ exports.updateCommentById = (commentId, { inc_votes: incrementVotes = 0 }) => {
 exports.selectCommentsByArticleId = (articleId, { limit = 10, p }) => {
   const queryParams = [articleId];
   let sqlQuery = `
-  SELECT *
-  FROM comments
+  SELECT comment_id, votes, body, article_id, created_at, author, users.avatar_url AS author_avatar
+  FROM comments AS c
+  LEFT JOIN users
+  on c.author = users.username
   WHERE
   article_id = $1
   ORDER BY created_at DESC`;
